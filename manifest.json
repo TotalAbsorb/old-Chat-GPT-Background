@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Revert chat gpt background",
+  "version": "1.0",
+  "description": "Change background color of chat gpt back to original.",
+
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*"],
+      "js": ["content_script.js"]
+    }
+  ]
+}
