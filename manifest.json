@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Revert chat gpt background",
+  "name": "The old chat gpt dark mode",
   "version": "1.0",
-  "description": "Change background color of chat gpt back to original.",
+  "description": "Changes the background color back to the original.",
 
   "background": {
     "service_worker": "background.js"
