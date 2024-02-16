@@ -1,37 +1,51 @@
-function changeBackgroundColor() {
     const root = document.documentElement
+    const originalMainSurfaceColor = root.style.getPropertyValue('--main-surface-primary')
+    const originalGray100Color = root.style.getPropertyValue('--gray-100')
+    const originalTextPrimaryColor = root.style.getPropertyValue('--text-primary')
 
-    const originalBgColor = document.body.style.backgroundColor
-    const originalMainSurfaceColor =document.documentElement.style.getPropertyValue('--main-surface-primary')
-    const originalMainSurfaceSecondaryColor =document.documentElement.style.getPropertyValue('--main-surface-secondary')
-
-    if(root.classList.contains('dark')){
-        document.body.style.backgroundColor = '#343541';
-        document.documentElement.style.setProperty('--main-surface-primary', '#343541')
-        root.style.setProperty('--main-surface-secondary', 'rgba(249,249,249,0.91)')
+    // init
+    if (root.classList.contains('dark')) {
+        applyDarkMode()
     }
 
-    const config = {attributes: true, attributeFilter: ['class']};
-    const onModeChange = function (mutationsList) {
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+    function applyDarkMode() {
+        root.style.setProperty('--main-surface-primary', '#343541')
+        root.style.setProperty('--text-primary', 'rgba(249,249,249,0.91)')
+        root.style.setProperty('--gray-100', 'rgba(249,249,249,0.91)')
+    }
 
-                const targetElement = mutation.target
-                if (targetElement.classList.contains('dark')) {
-                    document.body.style.backgroundColor = '#343541';
-                    document.documentElement.style.setProperty('--main-surface-primary', '#343541')
-                    root.style.setProperty('--gray-50', 'rgba(249,249,249,0.91)')
-                } else {
-                    document.body.style.backgroundColor = originalBgColor;
-                    document.documentElement.style.setProperty('--main-surface-primary', originalMainSurfaceColor)
-                    root.style.setProperty('--main-surface-secondary', originalMainSurfaceSecondaryColor)
-                }
-            }
+    function applyLightMode() {
+        root.style.setProperty('--main-surface-primary', originalMainSurfaceColor)
+        root.style.setProperty('--text-primary', originalTextPrimaryColor)
+        root.style.setProperty('--gray-100', originalGray100Color)
+    }
+
+    function changeMode() {
+        if (root.classList.contains('dark')) {
+            applyDarkMode()
+        } else {
+            applyLightMode()
         }
     }
 
-    const observer = new MutationObserver(onModeChange);
-    observer.observe(root, config)
-}
+    function onClassChange(node, callback) {
+        let lastClassString = node.classList.toString();
+        const mutationObserver = new MutationObserver((mutationList) => {
+            for (const item of mutationList) {
+                if (item.attributeName === "class") {
+                    const classString = node.classList.toString();
+                    if (classString !== lastClassString) {
+                        callback();
+                        lastClassString = classString;
+                        break;
+                    }
+                }
+            }
+        });
 
-changeBackgroundColor();
+        mutationObserver.observe(node, {attributes: true});
+        return mutationObserver;
+    }
+
+    onClassChange(root, changeMode)
+
